@@ -34,14 +34,17 @@ struct ServiceDiscovery {
 
     void timeout(boost::system::error_code ec) {
         if(!ec) {
-            std::erase_if(services, [](auto const& entry) {
-                auto const& [service, time] = entry;
-                if(Clock::now() > time + TimeoutInterval) {
-                    fmt::print("lost: {}\n", service);
-                    return true;
-                }
-                return false;
-            });
+            if(0 != std::erase_if(services, [&](auto const& entry) {
+                   auto const& [service, time] = entry;
+                   if(Clock::now() > time + TimeoutInterval) {
+                       fmt::print("lost: {}\n", service);
+                       return true;
+                   }
+                   return false;
+               }))
+            {
+                fmt::print("currently {} services\n", services.size());
+            }
 
             slookServer.getLookup().findServices(searchPattern, [&](auto const& foundService) {
                 auto const it = services.find(foundService);
@@ -50,6 +53,7 @@ struct ServiceDiscovery {
                 } else {
                     fmt::print("found: {}\n", foundService);
                     services[foundService] = Clock::now();
+                    fmt::print("currently {} services\n", services.size());
                 }
             });
 
