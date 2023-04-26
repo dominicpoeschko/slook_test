@@ -1,0 +1,6 @@
+[submodule "slook"]
+	path = slook
+	url = git@github.com:dominicpoeschko/slook.git
+[submodule "cmake_helpers"]
+	path = cmake_helpers
+	url = git@github.com:dominicpoeschko/cmake_helpers.git
